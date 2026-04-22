@@ -1,0 +1,445 @@
+
+
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>GST 1112 Interactive Quiz</title>
+  <style>
+    :root{--bg:#0f172a;--card:#111827;--accent:#06b6d4;--muted:#94a3b8;--white:#e6eef6}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;background: #1E1B4B;color:#FFFF;-webkit-font-smoothing:antialiased}
+    .wrap{max-width:920px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px}
+    h1{margin:0;}
+    .meta{color:var(--muted);font-size:13px}
+    .card{background: #312E81;padding:20px;border-radius:12px;margin-top:18px;box-shadow:0 6px 24px rgba(2,6,23,0.6)}
+    .question{font-size:18px;margin-bottom:12px}
+    .choices{display:flex;flex-direction:column;gap:8px}
+    .choice{background: #4338CA;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);cursor:pointer}
+    .choice:hover{transform:translateY(-2px)}
+    .choice.selected{outline:3px solid rgba(6,182,212,0.12);background: #22D3EE;}
+    .controls{display:flex;justify-content:space-between;align-items:center;margin-top:16px}
+    button{background:#C084FC;color:#042029;border:0;padding:10px 14px;border-radius:8px;cursor:pointer;font-weight:600}
+    button.secondary{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--white)}
+    .progress{height:10px;background:rgba(255,255,255,0.04);border-radius:999px;overflow:hidden}
+    .progress > i{display:block;height:100%;background:linear-gradient(90deg,var(--accent),#22D3EE);width:0%}
+    .footer{margin-top:16px;color:var(--muted);font-size:13px}
+    .result{padding:18px;border-radius:10px;background:linear-gradient(180deg, rgba(2,6,23,0.85), rgba(2,6,23,0.6));}
+    .review{margin-top:12px}
+    .q-review{background:rgba(255,255,255,0.02);padding:12px;border-radius:8px;margin-bottom:10px}
+    @media(max-width:560px){.wrap{padding:12px}h1{font-size:18px}.question{font-size:16px}}
+    .timer{ 
+    color:#FBBF24;
+    
+    }
+    .span{
+        display:flex;
+        font-size: 25px ;
+        float:right;
+    }
+    .h1{
+        font-size:25px
+    }
+    
+    
+    
+    body.light-mode{
+  background:#f1f5f9;
+  color:#0f172a;
+}
+body.light-mode .card{background:#ffffff;}
+body.light-mode .choice{background:#e2e8f0;color:#0f172a;}
+body.light-mode .choice.selected{background:#3b82f6;color:white;}
+body.light-mode button{background:#22c55e;color:white;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1 class="h1">GST 112 MCQs Interactive MCQ Quiz PRT1</h1>
+        <div class="meta">30 multiple-choice questions </div>
+ 
+                 <span class="span">Timer: <div class="timer" id="countdown-timer">15:00</div></span>
+      </div>
+    </header><div class="card" id="quiz-card">
+  <div class="progress" aria-hidden><i id="progress-bar"></i></div>
+  <div style="height:14px"></div>
+  <div id="q-area">
+    </div>
+
+  <div class="controls">
+    <div style="display:flex;gap:8px">
+      <button id="prevBtn" class="secondary">Previous</button>
+      <button id="nextBtn">Next</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <button id="submitBtn" class="secondary">Submit</button>
+      <div style="color:var(--muted);font-size:13px">Q <span id="q-num">1</span> / <span id="q-total">10</span></div>
+    </div>
+  </div>
+
+  <div class="footer">Tip: Select an answer and press Next. You can review answers after submission.Quiz will submit automatically once timer turns zero.</div>
+</div>
+
+<div id="result-area" style="display:none" class="card">
+  <div class="result">
+    <h2 id="score-title"></h2>
+    <p id="score-summary" class="meta"></p>
+  </div>
+  <div class="review" id="review-list"></div>
+  <div style="display:flex;gap:8px;margin-top:12px">
+    <button id="retryBtn">Retake Quiz</button>
+    <button id="exportBtn" class="secondary">Export Results</button>
+  </div>
+</div>
+<br><br><br>
+  <a href="https://wa.me/+2349036795652"><button>Contact The Developer</button></a>
+    <a href="https://wa.me/+2349036795652"><button>Support Project</button></a><br><br>
+   <button onclick="shareOnWhatsApp()">Share Quiz link via WhatsApp</button>
+  <h2>Designed by Readone</h2>
+  </div>
+   <script>
+       
+
+
+
+
+
+
+
+
+
+
+
+
+const QUESTIONS = [
+  {
+    q: "First minister appointed in colonial administration",
+    c: ["Tafawa Balewa", "Gowon", "Murtala Mohammed", "Nnamdi Azikiwe"],
+    a: 0
+  },
+  {
+    q: "Who is the first prime minister?",
+    c: ["Tafawa Balewa", "Nnamdi Azikiwe", "Obafemi Awolowo", "Ahmadu Bello"],
+    a: 0
+  },
+  {
+    q: "Who founded NCNC?",
+    c: ["Herbert Macaulay", "Nnamdi Azikiwe", "Ernest Ikoli", "Obafemi Awolowo"],
+    a: 1
+  },
+  {
+    q: "Who was the first minister appointed during the colonial administration?",
+    c: ["Herbert Macaulay", "Nnamdi Azikiwe", "Tafawa Balewa", "Ahmadu Bello"],
+    a: 0
+  },
+  {
+    q: "Which of the following nationalist contributed to the creation of NYM?",
+    c: ["Herbert Macaulay", "Ernest Ikoli", "Nnamdi Azikiwe", "H.O. Davies"],
+    a: 1
+  },
+  {
+    q: "Jam’iyyar Mutanen Arewa was formed in",
+    c: ["1945", "1940", "1951", "1949"],
+    a: 3
+  },
+  {
+    q: "Which culture practices bronze and brass sculpture?",
+    c: ["Yoruba", "Benin", "Igbo", "Hausa"],
+    a: 1
+  },
+  {
+    q: "The first phase of the amalgamation took place in?",
+    c: ["1700", "1800", "1900", "1914"],
+    a: 3
+  },
+  {
+    q: "The first election was in what year?",
+    c: ["1923", "1950", "1945", "1933"],
+    a: 0
+  },
+  {
+    q: "Who was the first king of Oyo?",
+    c: ["Oduduwa", "Oranmiyan", "Alaafin", "Sango"],
+    a: 1
+  },
+  {
+    q: "Who is known as the saviour of Nigeria and founder of NCNC?",
+    c: ["Herbert Macaulay", "Nnamdi Azikiwe", "Obafemi Awolowo", "Ahmadu Bello"],
+    a: 1
+  },
+  {
+    q: "What is the festival of Hausa people?",
+    c: ["Durbar", "Sallah", "Argungu", "Sharo"],
+    a: 0
+  },
+  {
+    q: "The term Durbar refers to...",
+    c: ["A ceremonial crown", "A king", "A display of horsemanship and military prowess", "A war dance"],
+    a: 2
+  },
+  {
+    q: "The capital of Oyo was",
+    c: ["Ile-Ife", "Ibadan", "Katunga", "Oyo-Ile"],
+    a: 3
+  },
+  {
+    q: "The Nok culture is known for",
+    c: ["Bead making", "Terracotta sculpture", "Weaving", "Metal works"],
+    a: 1
+  },
+  {
+    q: "The deity in Yoruba land known to resolve issues and maintain justice",
+    c: ["Sango", "Oya", "Orunmila", "Ogun"],
+    a: 2
+  },
+  {
+    q: "A Yoruba deity associated with water",
+    c: ["Sango", "Osun", "Oya", "Yemoja"],
+    a: 3
+  },
+  {
+    q: "The NYM was established in what year?",
+    c: ["1933", "1934", "1938", "1942"],
+    a: 1
+  },
+  {
+    q: "Bata drum is used for",
+    c: ["Religious occasions", "Ceremonial occasions", "Farming festivals", "Hunting rituals"],
+    a: 0
+  },
+  {
+    q: "A major city in the Oyo empire is",
+    c: ["Oyo", "Ibadan", "Osogbo", "Ife"],
+    a: 0
+  },
+  {
+    q: "The first coup was plotted by who?",
+    c: ["Macaulay", "Patrick Nzeogwu", "Suka Dimka", "Yakubu Gowon"],
+    a: 1
+  },
+  {
+    q: "What year was NOA established?",
+    c: ["1990", "1993", "2005", "1900"],
+    a: 1
+  },
+  {
+    q: "Who created Oyo Empire?",
+    c: ["Oranmiyan", "Oduduwa", "Sango", "Alaafin"],
+    a: 0
+  },
+  {
+    q: "Purpose of amalgamation",
+    c: ["Economic convenience", "Religious unity", "Colonial punishment", "Trade expansion"],
+    a: 0
+  },
+  {
+    q: "Who is the British journalist that named Nigeria?",
+    c: ["Lord Lugard", "Flora Shaw", "Henry Morton Stanley", "George Taubman"],
+    a: 1
+  },
+  {
+    q: "Who was the first nationalist to be granted knighthood by the British?",
+    c: ["Sir Herbert Macaulay", "Obafemi Awolowo", "Dr Nnamdi Azikiwe", "Ahmadu Bello"],
+    a: 0
+  },
+  {
+    q: "Who is the first premier of Western Nigeria?",
+    c: ["Nnamdi Azikiwe", "Obafemi Awolowo", "Herbert Macaulay", "Chief Alesinloye"],
+    a: 1
+  },
+  {
+    q: "The National Council for Nigeria and Cameroons (NCNC) was led by",
+    c: ["Ahmadu Bello", "Dr Nnamdi Azikiwe", "Herbert Macaulay", "Chief Dennis Osadebey"],
+    a: 1
+  },
+  {
+    q: "Which political party was created to fight for Nigeria's independence?",
+    c: ["NCNC", "AG", "NPC", "NEPU"],
+    a: 0
+  },
+  {
+    q: "Second World War ended in what year?",
+    c: ["1939", "1945", "1946", "1950"],
+    a: 1
+  },
+
+];
+
+
+ 
+function shareOnWhatsApp() {
+  const message = "https://generalhealthandwellness.com/category/questions-interactive-quiz-guide";
+  const encodedMessage = encodeURIComponent(message);
+  const whatsappUrl = "whatsapp://send?text=" + encodedMessage;
+  window.open(whatsappUrl, '_blank');
+}
+
+let state = { idx: 0, answers: Array(QUESTIONS.length).fill(null) };
+const total = QUESTIONS.length;
+
+function renderQuestion() {
+  const area = document.getElementById('q-area');
+  const q = QUESTIONS[state.idx];
+  document.getElementById('q-num').textContent = state.idx + 1;
+  document.getElementById('q-total').textContent = total;
+  const progress = Math.round((state.idx / total) * 100);
+  document.getElementById('progress-bar').style.width = progress + '%';
+
+  area.innerHTML = '';
+  const qEl = document.createElement('div');
+  qEl.innerHTML = `<div class="question">${state.idx + 1}. ${q.q}</div>`;
+  const choices = document.createElement('div');
+  choices.className = 'choices';
+
+  q.c.forEach((choice, i) => {
+    const btn = document.createElement('div');
+    btn.className = 'choice';
+    btn.textContent = String.fromCharCode(65 + i) + '. ' + choice;
+    if (state.answers[state.idx] === i) btn.classList.add('selected');
+
+    btn.addEventListener('click', () => {
+      state.answers[state.idx] = i;
+      document.querySelectorAll('.choice').forEach(el => el.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+
+    choices.appendChild(btn);
+  });
+
+  qEl.appendChild(choices);
+  area.appendChild(qEl);
+}
+
+document.getElementById('nextBtn').addEventListener('click', () => {
+  if (state.idx < total - 1) state.idx++;
+  renderQuestion();
+});
+
+document.getElementById('prevBtn').addEventListener('click', () => {
+  if (state.idx > 0) state.idx--;
+  renderQuestion();
+});
+
+document.getElementById('submitBtn').addEventListener('click', () => {
+  const unanswered = state.answers.filter(a => a === null).length;
+  if (unanswered > 0) {
+    if (!confirm(`You have ${unanswered} unanswered questions. Submit anyway?`)) return;
+  }
+  gradeQuiz();
+});
+
+function gradeQuiz() {
+  clearInterval(timerInterval); // stop timer
+
+  let correct = 0;
+  const review = [];
+
+  for (let i = 0; i < total; i++) {
+    const user = state.answers[i];
+    const correctIdx = QUESTIONS[i].a;
+    const ok = user === correctIdx;
+    if (ok) correct++;
+    review.push({ i, q: QUESTIONS[i].q, choices: QUESTIONS[i].c, user, correctIdx, ok });
+  }
+
+  showResult(correct, review);
+}
+
+function showResult(score, review) {
+  document.getElementById('quiz-card').style.display = 'none';
+  const area = document.getElementById('result-area');
+  area.style.display = 'block';
+
+  document.getElementById('score-title').textContent = `You scored ${score} out of ${total}`;
+  const pct = Math.round((score / total) * 100);
+  document.getElementById('score-summary').textContent = `Percentage: ${pct}%`;
+
+  const list = document.getElementById('review-list');
+  list.innerHTML = '';
+
+  review.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'q-review';
+    const head = document.createElement('div');
+    head.style.fontWeight = '700';
+    head.textContent = `${item.i + 1}. ${item.q}`;
+    const userAns = document.createElement('div');
+    const ua = item.user === null ? 'No answer' : String.fromCharCode(65 + item.user) + '. ' + item.choices[item.user];
+    const ca = String.fromCharCode(65 + item.correctIdx) + '. ' + item.choices[item.correctIdx];
+    userAns.innerHTML = `<div><strong>Your answer:</strong> ${ua}</div><div><strong>Correct:</strong> ${ca}</div>`;
+    userAns.style.color = item.ok ? 'lightgreen' : '#fca5a5';
+    div.appendChild(head);
+    div.appendChild(userAns);
+    list.appendChild(div);
+  });
+}
+
+/* ---------------- TIMER ---------------- */
+let totalSeconds = 15* 60; 
+const countdownEl = document.getElementById('countdown-timer');
+let timerInterval = null;
+let warned = false;
+
+//  Warning sound
+function playWarningSound() {
+  const ctx = new (window.AudioContext || window.webkitAudioContext)();
+  const osc = ctx.createOscillator();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(800, ctx.currentTime);
+  osc.connect(ctx.destination);
+  osc.start();
+  osc.stop(ctx.currentTime + 0.5);
+}
+
+function startCountdown() {
+  timerInterval = setInterval(() => {
+    let mins = Math.floor(totalSeconds / 60);
+    let secs = totalSeconds % 60;
+    countdownEl.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+    totalSeconds--;
+
+    if (totalSeconds === 300 && !warned) { // 5 minutes left
+      playWarningSound();
+      alert("⚠️ 5 minutes remaining!");
+      warned = true;
+    }
+
+    if (totalSeconds < 0) {
+      clearInterval(timerInterval);
+      gradeQuiz();
+    }
+  }, 1000);
+}
+
+/* ---------------- LIGHT MODE ---------------- */
+const toggleBtn = document.createElement("button");
+toggleBtn.textContent = "☀️";
+toggleBtn.style.marginLeft = "10px";
+document.querySelector("header").appendChild(toggleBtn);
+
+toggleBtn.addEventListener("click", () => {
+  document.body.classList.toggle("light-mode");
+});
+
+/* Reset */
+document.getElementById('retryBtn')?.addEventListener('click', () => {
+  state = { idx: 0, answers: Array(total).fill(null) };
+  document.getElementById('result-area').style.display = 'none';
+  document.getElementById('quiz-card').style.display = 'block';
+  totalSeconds = 45 * 60;
+  warned = false;
+  renderQuestion();
+  startCountdown();
+});
+
+renderQuestion();
+window.addEventListener('load', startCountdown);
+</script>
+      
+</body>
+</html>
